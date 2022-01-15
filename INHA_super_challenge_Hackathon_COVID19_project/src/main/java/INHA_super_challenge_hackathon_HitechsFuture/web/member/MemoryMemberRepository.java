@@ -3,6 +3,7 @@ package INHA_super_challenge_hackathon_HitechsFuture.web.member;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 
 @Slf4j
@@ -63,5 +64,12 @@ public class MemoryMemberRepository implements MemberRepository {
     @Override
     public List<Member> findAll() {
         return new ArrayList<>(map.values());
+    }
+
+    @Override
+    public Optional<Member> LoginSuccess(String id,String password) {
+        Optional<Member> member=findByLoginId(id);
+        //member의 password와 인자의 password가 같으면 해당 Member return, 아니면 Optional.empty() return
+        return Optional.empty();
     }
 }

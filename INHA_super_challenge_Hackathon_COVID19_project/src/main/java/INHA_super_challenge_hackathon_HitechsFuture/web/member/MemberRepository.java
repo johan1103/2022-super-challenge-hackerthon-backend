@@ -17,5 +17,5 @@ public interface MemberRepository {
         // 모든 선생님들의 리스트 반환
     List<Member> findAll();
         // 모든 멤버들의 리스트 반환
-
+    Optional<Member> LoginSuccess(String id,String password);
 }
