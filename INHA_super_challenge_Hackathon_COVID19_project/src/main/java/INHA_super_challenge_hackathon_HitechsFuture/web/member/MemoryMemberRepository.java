@@ -26,7 +26,9 @@ public class MemoryMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findByLoginId(String Id) {
-        return Optional.ofNullable(map.);
+        return map.values().stream()
+                .filter(member -> member.getLoginId().equals(Id))
+                .findAny();
     }
 
     @Override
