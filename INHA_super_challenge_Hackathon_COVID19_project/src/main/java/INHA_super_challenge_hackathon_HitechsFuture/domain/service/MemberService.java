@@ -12,8 +12,9 @@ public class MemberService {
 
     // 회원가입
     public Long join(Member member) {
-        memberRepository.findBy
-
+        validateDuplicateMember(member);
+        memberRepository.save(member);
+        return member.getId();
     }
 
     private void validateDuplicateMember(Member member) {
