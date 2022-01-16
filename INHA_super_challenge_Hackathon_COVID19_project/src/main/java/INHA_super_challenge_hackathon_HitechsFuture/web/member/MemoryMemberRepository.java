@@ -21,7 +21,9 @@ public class MemoryMemberRepository implements MemberRepository {
 
     @Override
     public Optional<Member> findById(Long id) {
-        return Optional.empty();
+        return map.values().stream()
+                .filter(member -> member.getId().equals(id))
+                .findAny();
     }
 
     @Override

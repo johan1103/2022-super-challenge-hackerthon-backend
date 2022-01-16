@@ -9,6 +9,7 @@ public interface MemberRepository {
     Optional<Member> findById(Long id);
         // 고유 ID로 멤버 조회
     Optional<Member> findByLoginId(String Id);
+        // 로그인 ID로 멤버 조회
     Optional<Member> findByName(String name);
         // 이름으로 멤버 조회
     List<Member> findAllStudent();
