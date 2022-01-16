@@ -12,18 +12,21 @@ public class MemberService {
 
 
     // 회원가입
-    public Long join(Member member) {
-        validateDuplicateMember(member);
+    public void join(Member member) {
+        //validateDuplicateMember(member);
         memberRepository.save(member);
-        return member.getId();
+        //return member.getId();
     }
 
-    private void validateDuplicateMember(Member member) {
-        memberRepository.findByName(member.getName())
+    // 회원 ID 중복처리
+    // 중복되는 내용이고, 실패시 JSON으로 return 할 것이므로 일단 생략
+
+    /*private void validateDuplicateMember(Member member) {
+        memberRepository.findByLoginId(member.getLoginId())
                 .ifPresent(m -> {
-                    throw  new IllegalStateException("이미 존재하는 회원입니다.");
+                    throw new IllegalStateException("이미 존재하는 회원ID입니다.");
                 });
-    }
+    }*/
 
 
 }
