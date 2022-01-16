@@ -39,14 +39,14 @@ public class LoginController {
             // 로그인 실패
             // 사실 애매한 코드, loginForm이 받을때부터 빌 가능성이 있나?
             // NotEmpty가 있으니까 안 그럴거 같긴함
-            return "fail";
+            return "EXCEPTION_LOGINFORM_EMPTY";
             // fail이라는 body를 HTTP에 넣어서 return
         }
         Member member = loginService.login(loginForm.getLoginId(), loginForm.getPassword());
 
         if (member == null) {
             // 이건 잘못된 정보로 인한 로그인 실패
-            return "fail";
+            return "EXCEPTION_WRONG_ID_OR_PASSWORD";
         }
 
         // 로그인 성공 : 쿠키를 부여
@@ -56,7 +56,7 @@ public class LoginController {
 
 
         // 로그인 성공
-        return "login_success";
+        return "LOGIN_SUCCESS";
 
 
         // TODO
@@ -72,7 +72,7 @@ public class LoginController {
     public String logout(HttpServletResponse response) {
         cookieClass.expireCookie(response, "memberId");
 
-        return "logout_complete";
+        return "LOGOUT_SUCCESS";
     }
 
 

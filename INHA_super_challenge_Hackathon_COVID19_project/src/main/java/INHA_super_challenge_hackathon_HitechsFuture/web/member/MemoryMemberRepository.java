@@ -10,7 +10,9 @@ import java.util.*;
 public class MemoryMemberRepository implements MemberRepository {
 
     private static Map<Long, Member> map = new HashMap<>();
+    // <Member 고유 ID (sequence), 해당 멤버 객체> 로 이루어진 MAP
     private static long sequence = 0L;
+    // 고유 ID 생성을 위한 sequence 변수
 
     @Override
     public Member save(Member member) {
