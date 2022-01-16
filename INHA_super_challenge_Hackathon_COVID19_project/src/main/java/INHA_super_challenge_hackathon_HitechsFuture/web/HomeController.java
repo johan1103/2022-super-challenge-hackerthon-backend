@@ -27,7 +27,7 @@ public class HomeController {
 
     @GetMapping("/")
     @ResponseBody
-    public Member home(@CookieValue(name = "memberId", required = false) Long memberId, Model model,
+    public Member home(@CookieValue(name = "memberId", required = false) Long memberId,
                      HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         // 로그인된 사용자가 없으면 null data를 JSON 형식으로 return
@@ -55,6 +55,11 @@ public class HomeController {
         // 선생님과 학생 창을 나누려고 하는데, 프론트엔드에서 넘겨받은 JSON을 처리할 수 있는지 확인 필요
         // 일단 로그인이 되어있으면 홈화면에서 쿠키도 있고, 쿠키를 이용해 HTTP body에 게속 member JSON 을 가지고 있음
         // 로그인이 안되어 있거나 (또는 실패하면) HTTP body에 아무것도 가지고 있지 않음
+
+        // TODO
+        // 홈 화면에 들어왔을 때 쿠키 정보로 멤버를 조회하고, 해당 멤버의 마지막 자가진단 시간이 오늘이 아니라면, 자가진단을 하는
+        // 창으로 이동 (알림에 해당하는 정보를 담은 JSON을 return)
+        // 이것 또한 위와 같이 넘겨받은 프론트엔드가 자가진단의 유무를 가져가서 로직을 짤 수 있는지가 관건
 
     }
 
