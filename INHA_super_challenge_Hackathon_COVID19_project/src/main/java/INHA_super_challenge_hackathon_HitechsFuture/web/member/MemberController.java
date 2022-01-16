@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,10 +31,13 @@ public class MemberController {
 
 
     // : /members/add 주소를 받았을 때 실행
-    @GetMapping("/add")
+    @PostMapping("/sign_up")
     public void createForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 여기서 넘겨받는 데이터 : JSON (request에 해당)
+
+        // ********************************************************************************************************
         // { "loginId" : 로그인 ID, "password" : 비밀번호, "name" : 이름, "age" : 나이, "gender" : 성별, "job" : 직업 }
+        // ********************************************************************************************************
         // 과 같이 JSON을 넘겨받는다고 가정한다.
         ServletInputStream inputStream = request.getInputStream();
         // 데이터를 받는 형식
@@ -54,7 +58,7 @@ public class MemberController {
         // 여기다가 로그인이 되었다는 신호를 넘겨주면 된다.
         // 만약 다시 JSON으로 넘겨줄 일이 있다면 return 타입을 바꾸면 된다.
         // return "str"에서 str이 그냥 HTTP의 body에 해당한다.
-        response.getWriter().write("ok");
+        response.getWriter().write("sign_up_complete");
     }
 
 

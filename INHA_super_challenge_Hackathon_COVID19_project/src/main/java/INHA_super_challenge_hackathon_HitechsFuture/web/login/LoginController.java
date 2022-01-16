@@ -1,12 +1,13 @@
 package INHA_super_challenge_hackathon_HitechsFuture.web.login;
 
-
+import INHA_super_challenge_hackathon_HitechsFuture.web.cookie.CookieClass;
 import INHA_super_challenge_hackathon_HitechsFuture.domain.login.LoginService;
 import INHA_super_challenge_hackathon_HitechsFuture.web.member.Member;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletException;
@@ -23,8 +24,9 @@ public class LoginController {
 
     private final LoginService loginService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final CookieClass cookieClass;
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public String loginForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ServletInputStream inputStream = request.getInputStream();
         // 데이터를 받는 형식
@@ -50,10 +52,28 @@ public class LoginController {
         // 로그인 성공 : 쿠키를 부여
         Cookie idCookie = new Cookie("memberId", String.valueOf(member.getId()));
         response.addCookie(idCookie);
+        // 고유 ID에 대한 정보를 저장
 
 
         // 로그인 성공
-        return "ok";
+        return "login_success";
+
+
+        // TODO
+        // 생각해봐야할 점 : 일단 당장은 로그인을 했을 때 Member을 JSON으로 넘겨주지 않고, 로그인 성공에 대한 상태만 넘겨주었다.
+        // 로그인을 성공하면 다시 홈 화면이나 다른 학생/학부모에 알맞은 창으로 넘어갈거라고 생각해서이다.
+        // 만약 로그인을 성공하자마자 멤버에 대해 필요하다면 멤버를 memberRepository에서 꺼내서 return하면 된다.
 
     }
+
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public String logout(HttpServletResponse response) {
+        cookieClass.expireCookie(response, "memberId");
+
+        return "logout_complete";
+    }
+
+
 }
