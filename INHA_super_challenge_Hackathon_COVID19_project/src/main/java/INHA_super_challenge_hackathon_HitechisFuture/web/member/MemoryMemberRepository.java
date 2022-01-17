@@ -35,6 +35,9 @@ public class MemoryMemberRepository implements MemberRepository {
                 .findAny();
     }
 
+    // TODO
+    // 로직 생각하고 변경 필요
+    // 이름은 중복 가능한데, 하나만 찾도록 되어 있음.
     @Override
     public Optional<Member> findByName(String name) {
         return map.values().stream()

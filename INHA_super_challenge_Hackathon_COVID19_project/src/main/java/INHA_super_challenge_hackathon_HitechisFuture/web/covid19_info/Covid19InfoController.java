@@ -2,6 +2,7 @@ package INHA_super_challenge_hackathon_HitechisFuture.web.covid19_info;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
@@ -9,6 +10,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
@@ -32,14 +35,8 @@ public class Covid19InfoController {
     }
 
     @GetMapping("/api")
-    public String callApi() throws Exception {
+    public String callApi(HttpServletRequest request, HttpServletResponse response) throws Exception {
         StringBuilder result = new StringBuilder();
-
-        // 디코딩해야 되는지 안해도 되는지 의문
-        String decode_url
-                = URLDecoder.decode("EVK8sALIQuyk3bk%2FC9vzOIbFTR6lpSjMVmvJ0korF56Z3oDPZCdwVN6TllXO3jLQ5cxsWq0cr9edjdPlko2EQA%3D%3D",
-                "UTF-8");
-
 
 
         // 오늘의 날짜를 yyyyMMdd 형식으로 변환한다
@@ -52,10 +49,12 @@ public class Covid19InfoController {
         String today_string = transFormat.format(today);
         String prev_string = AddDate(today_string, 0, 0, -5);
 
+        String serviceKey =
+                "EVK8sALIQuyk3bk%2FC9vzOIbFTR6lpSjMVmvJ0korF56Z3oDPZCdwVN6TllXO3jLQ5cxsWq0cr9edjdPlko2EQA%3D%3D";
 
 
         String urlStr = "http://openapi.data.go.kr/openapi/service/rest/Covid19/getCovid19InfStateJson" +
-                "?serviceKey=" + "EVK8sALIQuyk3bk%2FC9vzOIbFTR6lpSjMVmvJ0korF56Z3oDPZCdwVN6TllXO3jLQ5cxsWq0cr9edjdPlko2EQA%3D%3D" +
+                "?serviceKey=" + serviceKey +
                 "&pageNo=1" +
                 "&numOfRows=10" +
                 "&type=xml" +
@@ -73,69 +72,66 @@ public class Covid19InfoController {
 
         String returnLine;
 
-        // result에 xml이 저장
+        // result에 xml을 저장
+        result.append("<xmp>");
         while ((returnLine = br.readLine()) != null) {
-            result.append(returnLine+"\n\r");
+            result.append(returnLine + "\n");
         }
+        //result.append("</xmp");
         urlConnection.disconnect();
-
         // xml string 변수
         String result_xml = result.toString();
 
-        // 테스트를 위한 콘솔 출력
-        System.out.println(result_xml);
 
-        // xml을 파싱해주는 객체를 생성
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+        // 지금 하고 있는거
+        Document documentInfo = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(urlStr);
+        documentInfo.getDocumentElement().normalize();
 
-        // xml 문자열을 InputStream으로 변환
-        InputStream is = new ByteArrayInputStream(result_xml.getBytes());
+        NodeList nList = documentInfo.getElementsByTagName("item");
 
-        // 파싱 시작
-        Document doc = documentBuilder.parse(is);
-        doc.getDoctype().normalize();
+        Map<String, Covid19Info> map = new HashMap<>();
+        // 1st parameter : 날짜에 해당하는 String
+        // 2nd parameter : 코로나19 관련 정보 객체
 
-        // 최상위 노드 탐색
-        Element element = doc.getDocumentElement();
-
-            /*// 원하는 태그 데이터 탐색
-            NodeList standardDayList = element.getElementsByTagName("STATE_DT");
-            NodeList confirmedCaseList = element.getElementsByTagName("DECIDE_CNT");
-            NodeList deadPeopleList = element.getElementsByTagName("DEATH_CNT");*/
-
-
-        // Map에 데이터를 넣어서 JSON으로 변환 후 반환
-        Map<Date, Covid19Info> map = new HashMap<>();
-
-
-        // 각각의 객체에 삽입
-        NodeList nList = element.getElementsByTagName("item");
-
-        for (int index = 0; index < nList.getLength(); index++) {
-            Node nNode = nList.item(index);
-
+        for (int temp = 0; temp < nList.getLength(); temp++) {
+            Node nNode = nList.item(temp);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
                 Element eElement = (Element) nNode;
 
-                // xml의 날짜 형식이 yyyy-MM-dd HH:mm:ss.000 형식이므로 알맞게 조정
-                String date = Objects.requireNonNull(getTagValue("STATE_DT", eElement)).substring(0, 19);
+                // ****************************************************
+                // 현재 JSON에 date 형식으로 넣어서 보내는 코드를 작성
+                // format만 바꿔주면 원하는 형식에 맞춰 String으로 전달도 가능
+                // 필요시 이 부분을 수정할 것
+                // ****************************************************
+                // 2022.01.17 : Date 객체를 넣을 시 Postman에서 정확한 날짜인데도 하루 날짜가 빠른 15:00 가 된다.
+                // GMT 관련인지 알아봐야 할 것 같고, 일단 String으로 날짜 정보를 수정
+                // date 형식 : yyyyMMdd
+
+                String date = getTagValue("stateDt", eElement);
+
                 // String으로 받아와서 Integer로 변환
-                int confirmedCase = Integer.parseInt(Objects.requireNonNull(getTagValue("DECIDE_CNT", eElement)));
-                int deadPeople = Integer.parseInt(Objects.requireNonNull(getTagValue("DEATH_CNT", eElement)));
+                // 확진자 정보
+                int confirmedCase = Integer.parseInt(Objects.requireNonNull(getTagValue("decideCnt", eElement)));
+                // 사망자 정보보
+               int deadPeople = Integer.parseInt(Objects.requireNonNull(getTagValue("deathCnt", eElement)));
+
+
 
                 // 알맞은 날짜 형식에 대해 Data Format을 맞춰주는 SimpleDateFormat 함수
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                // 2022.01.17 : 현재 date를 String으로 임시 사용중이므로, 미사용
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
+
+
 
                 // map에 삽입
-                map.put(transFormat.parse(date), new Covid19Info(transFormat.parse(date),confirmedCase, deadPeople));
+                map.put(date, new Covid19Info(date, confirmedCase, deadPeople));
             }
         }
+
         // JSON 객체 생성
         String json = new ObjectMapper().writeValueAsString(map);
 
-        // return
+        // JSON 객체를 HTTP body에 실어서 반환
         return json;
 
     }
@@ -148,4 +144,5 @@ public class Covid19InfoController {
             return null;
         return nValue.getNodeValue();
     }
+
 }
