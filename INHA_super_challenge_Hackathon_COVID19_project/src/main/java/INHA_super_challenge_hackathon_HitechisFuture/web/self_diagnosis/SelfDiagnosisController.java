@@ -34,12 +34,16 @@ public class SelfDiagnosisController {
                            HttpServletRequest request, HttpServletResponse response)
             throws IOException {
 
+        // <입력 JSON 형식>
         // ********************************************************************************************************
-        // { "date" : 날짜, "fever" : 체온, "visitOverseas" : 해외 방문 여부, "haveSelfQuarantineFamily" : 자가격리 가족 유무,
-        //    "contactConfirmedPerson" : 확진차 접촉 여부, "visitHighRiskFacilities" : 고위험 시설 방문 여부,
-        //    "symptomsArray" : 코로나 관련 증상(배열) }
+        // { "date" : 날짜(yyyy.MM.dd 형식), "fever" : 체온(double), "visitOverseas" : 해외 방문 여부(boolean),
+        //  "haveSelfQuarantineFamily" : 자가격리 가족 유무(boolean), "contactConfirmedPerson" : 확진자 접촉 여부(boolean),
+        //  "visitHighRiskFacilities" : 고위험 시설 방문 여부(boolean),  "cough": 기침 여부(boolean),
+        //  "shortness_OF_BREATH" : 호흡곤란 여부(boolean), "chills" : 오한 여부(boolean), "arches_PAINS" : 근육통 여부(boolean),
+        //  "headache" : 두통 여부(boolean), "sore_THROAT" : 인후통 여부(boolean), "loss_OF_TASTE" : 미각 상실 여부(boolean),
+        //  "loss_OF_SMELL" : 후각 상실 여부(boolean) }
         // ********************************************************************************************************
-        // 과 같이 JSON을 넘겨받는다고 가정한다.
+
         //  WARNING : date의 경우 yyyy.mm.dd 의 형식으로 넘겨받아야 한다.
 
         // 로그인이 되어있는 상태에서만 자가격리서를 작성할 수 있다.
@@ -63,9 +67,11 @@ public class SelfDiagnosisController {
 
             // 입력받은 JSON으로 자가진단서 객체 생성
             SelfDiagnoseForm selfDiagnoseForm = objectMapper.readValue(messageBody, SelfDiagnoseForm.class);
+            selfDiagnoseForm.setMember(member.get());
 
             // member로 헤당하는 자가진단서 repository 탐색
-            Optional<PersonalDiagnoseFormRepository> repository = allDiagnosisFormRepository.findById(member.get().getId());
+            Optional<SingleDiagnosisRepository> repository =
+                    allDiagnosisFormRepository.findById(member.get().getId());
 
             if (repository.isPresent()) {
                 // 성공 케이스
@@ -73,6 +79,14 @@ public class SelfDiagnosisController {
 
                 // 현재 member의 자가진단 여부를 true로 갱신
                 member.get().setSelf_diagnosis_notification(true);
+
+                // *************************************************************************
+                // 테스트 출력
+                // member 이름으로 repository가 만들어졌는지, 그 안에 객체가 저장되었는지 테스트
+                System.out.println(member.get().getName() + "가(이) 작성한 총 자가진단서 작성 횟수 : "
+                        + allDiagnosisFormRepository.findById(member.get().getId()).get().getSelfDiagnoseForms().size());
+                // 테스트 출력
+                // *************************************************************************
 
                 return "SELF_DIAGNOSIS_WRITE_COMPLETE";
             }
@@ -88,3 +102,10 @@ public class SelfDiagnosisController {
 
     }
 }
+
+
+
+// TODO
+// 2022.01.17
+// h2를 이용한 비메모리 DB 저장 성공
+// 미리 테이블을 만들어두는 등 조치를 취해 메모리 DB 저장 필요요

@@ -5,10 +5,12 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-//@Repository
+@Transactional
+@Repository
 public class JpaMemberRepository implements MemberRepository {
 
     private final EntityManager em;
@@ -30,10 +32,13 @@ public class JpaMemberRepository implements MemberRepository {
         return Optional.ofNullable(member);
     }
 
+    // ***************************************************************************************
+    // 2022.01.17 TODO : (공부 필요) 쿼리문에서 :parameter와 setParameter의 parameter 이름이 동일해야 한다.
+
     @Override
     public Optional<Member> findByLoginId(String login_Id) {
         List<Member> result = em.createQuery("select m from Member m where m.loginId = :login_Id", Member.class)
-                .setParameter("loginId", login_Id).getResultList();
+                .setParameter("login_Id", login_Id).getResultList();
 
         return result.stream().findAny();
     }
@@ -53,13 +58,13 @@ public class JpaMemberRepository implements MemberRepository {
     // 쿼리에 대해서 맞는지 검증 필요
     @Override
     public List<Member> findAllStudent() {
-        return em.createQuery("select m from Member m where m.Job = STUDENT", Member.class)
+        return em.createQuery("select m from Member m where m.job = 0", Member.class)
                 .getResultList();
     }
 
     @Override
     public List<Member> findAllTeacher() {
-        return em.createQuery("select m from Member m where m.Job = TEACHER", Member.class)
+        return em.createQuery("select m from Member m where m.job = 1", Member.class)
                 .getResultList();
     }
 
@@ -67,7 +72,7 @@ public class JpaMemberRepository implements MemberRepository {
     public List<Member> findAll() {
         // 쿼리를 이용해 모든 DB에 저장된 member을 찾고, 이를 리스트로 반환한다.
         // select m 의 의미는 m이라는 엔티티를 그냥 m 그대로 가져다 쓰겠다는 의미이다.
-        // JPQL
+        // JPQL 문법
         return em.createQuery("select m from Member m", Member.class).getResultList();
     }
 }
