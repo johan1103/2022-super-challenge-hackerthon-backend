@@ -1,3 +1,4 @@
+/*
 package INHA_super_challenge_hackathon_HitechisFuture.web.self_diagnosis;
 
 import INHA_super_challenge_hackathon_HitechisFuture.web.member.Member;
@@ -19,4 +20,11 @@ public interface PersonalDiagnoseFormRepository {
 
     // 해당 자가진단서 repository의 member 객체 반환
     Member getMember();
+
+    // 자가진단서
 }
+*/
+
+
+// 22.01.17
+// JPA 방식으로 업데이트

@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -20,11 +21,11 @@ public class Member {
     private String password;
     @NotEmpty
     private String name;
-    @NotEmpty
+    @NotNull
     private int age;
-    @NotEmpty
+    @NotNull
     private Gender gender;
-    @NotEmpty
+    @NotNull
     private Job job;
 
 
