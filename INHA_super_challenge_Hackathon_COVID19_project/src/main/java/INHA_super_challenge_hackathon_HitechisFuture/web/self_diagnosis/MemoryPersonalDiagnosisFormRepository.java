@@ -1,19 +1,31 @@
+/*
 package INHA_super_challenge_hackathon_HitechisFuture.web.self_diagnosis;
 
 import INHA_super_challenge_hackathon_HitechisFuture.web.member.Member;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
-// 스프링 빈이 아닌 일반 클래스
-public class MemoryPersonalDiagnosisFormRepository implements PersonalDiagnoseFormRepository {
+//@Entity
+public class MemoryPersonalDiagnosisFormRepository {
 
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long sequence;
+    // 각 자가진단서 repository의 고유 ID
+
+    private Long userId;
+    // 해당 repository의 memeber의 ID
     private Member member;
-    private ArrayList<SelfDiagnoseForm> selfDiagnoseForms;
+
+    //@ManyToOne(fetch=FetchType.EAGER)
+    //@JoinColumn(name = "diagnosisFormRepository")
+    private List<SelfDiagnoseForm> selfDiagnoseForms;
 
 
-    @Override
     public void save(SelfDiagnoseForm selfDiagnoseForm) {
 
         // TODO
@@ -22,7 +34,6 @@ public class MemoryPersonalDiagnosisFormRepository implements PersonalDiagnoseFo
         selfDiagnoseForms.add(selfDiagnoseForm);
     }
 
-    @Override
     public Optional<SelfDiagnoseForm> findByDate(Date date) {
         for (SelfDiagnoseForm selfDiagnoseForm : selfDiagnoseForms) {
             if (selfDiagnoseForm.getDate().equals(date)) {
@@ -34,18 +45,25 @@ public class MemoryPersonalDiagnosisFormRepository implements PersonalDiagnoseFo
         return Optional.empty();
     }
 
-    @Override
-    public ArrayList<SelfDiagnoseForm> findAll() {
+    public List<SelfDiagnoseForm> findAll() {
         return selfDiagnoseForms;
     }
 
-    @Override
     public Member getMember() {
         return member;
     }
 
+    public MemoryPersonalDiagnosisFormRepository() {
+
+    }
     public MemoryPersonalDiagnosisFormRepository(Member member) {
         this.member = member;
+        this.userId = member.getId();
         this.selfDiagnoseForms = new ArrayList<>();
     }
 }
+*/
+
+
+// 22.01.17
+// JPA 방식으로 업데이트

@@ -1,3 +1,4 @@
+/*
 package INHA_super_challenge_hackathon_HitechisFuture.web.member;
 
 import lombok.extern.slf4j.Slf4j;
@@ -6,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Slf4j
-@Repository
+//@Repository
 public class MemoryMemberRepository implements MemberRepository {
 
     private static Map<Long, Member> map = new HashMap<>();
@@ -72,3 +73,8 @@ public class MemoryMemberRepository implements MemberRepository {
         return new ArrayList<>(map.values());
     }
 }
+*/
+
+
+// 22.01.17
+// JPA 방식으로 업데이트

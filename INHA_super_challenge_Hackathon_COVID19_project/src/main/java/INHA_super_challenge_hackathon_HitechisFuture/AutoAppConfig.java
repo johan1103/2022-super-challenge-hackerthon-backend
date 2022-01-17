@@ -2,6 +2,7 @@ package INHA_super_challenge_hackathon_HitechisFuture;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import java.util.List;
 
 @Configuration
 @ComponentScan
